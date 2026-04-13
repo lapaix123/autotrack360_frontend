@@ -17,7 +17,7 @@ export default function Login() {
       localStorage.setItem('token', data.token)
       localStorage.setItem('email', data.email)
       localStorage.setItem('role', data.role)
-      navigate('/dashboard')
+      navigate('/app/dashboard')
     } catch (err) {
       setError(err.response?.data?.error || 'Login failed')
     } finally {

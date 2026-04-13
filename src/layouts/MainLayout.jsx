@@ -1,13 +1,13 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 
 const navItems = [
-  { to: '/dashboard', label: 'Dashboard', icon: '📊' },
-  { to: '/vehicles', label: 'Vehicles', icon: '🚗' },
-  { to: '/shipments', label: 'Shipments', icon: '🚢' },
-  { to: '/inventory', label: 'Inventory', icon: '🏭' },
-  { to: '/sales', label: 'Sales', icon: '💰' },
-  { to: '/payments', label: 'Payments', icon: '💳' },
-  { to: '/documents', label: 'Documents', icon: '📄' },
+  { to: '/app/dashboard', label: 'Dashboard', icon: '📊' },
+  { to: '/app/vehicles', label: 'Vehicles', icon: '🚗' },
+  { to: '/app/shipments', label: 'Shipments', icon: '🚢' },
+  { to: '/app/inventory', label: 'Inventory', icon: '🏭' },
+  { to: '/app/sales', label: 'Sales', icon: '💰' },
+  { to: '/app/payments', label: 'Payments', icon: '💳' },
+  { to: '/app/documents', label: 'Documents', icon: '📄' },
 ]
 
 export default function MainLayout() {
