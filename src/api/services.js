@@ -3,6 +3,8 @@ import api from './axios'
 export const authAPI = {
   login: (data) => api.post('/auth/login', data),
   register: (data) => api.post('/auth/register', data),
+  forgotPassword: (data) => api.post('/auth/forgot-password', data),
+  resetPassword: (data) => api.post('/auth/reset-password', data),
 }
 
 export const dashboardAPI = {
@@ -10,11 +12,15 @@ export const dashboardAPI = {
 }
 
 export const vehiclesAPI = {
-  getAll: () => api.get('/vehicles'),
+  getAll: (status) => api.get(status ? `/vehicles?status=${status}` : '/vehicles'),
   getById: (id) => api.get(`/vehicles/${id}`),
   create: (data) => api.post('/vehicles', data),
   update: (id, data) => api.put(`/vehicles/${id}`, data),
   updateStatus: (id, status) => api.patch(`/vehicles/${id}/status?status=${status}`),
+  uploadImage: (id, formData) => api.post(`/vehicles/${id}/images`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  getImages: (id) => api.get(`/vehicles/${id}/images`),
+  deleteImage: (imageId) => api.delete(`/vehicles/images/${imageId}`),
+  getImageUrl: (id, filename) => `${api.defaults.baseURL}/vehicles/${id}/images/${filename}`,
 }
 
 export const shipmentsAPI = {
@@ -23,6 +29,7 @@ export const shipmentsAPI = {
   create: (data) => api.post('/shipments', data),
   addVehicle: (id, vehicleId) => api.post(`/shipments/${id}/vehicles/${vehicleId}`),
   updateStatus: (id, status) => api.patch(`/shipments/${id}/status?status=${status}`),
+  track: (trackingNumber) => api.get(`/shipments/track/${trackingNumber}`),
 }
 
 export const inventoryAPI = {

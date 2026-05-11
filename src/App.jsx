@@ -8,6 +8,7 @@ import Inventory from './pages/Inventory'
 import Sales from './pages/Sales'
 import Payments from './pages/Payments'
 import Documents from './pages/Documents'
+import TrackShipment from './pages/TrackShipment'
 import MainLayout from './layouts/MainLayout'
 
 function PrivateRoute({ children }) {
@@ -20,6 +21,8 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/track" element={<TrackShipment />} />
+        <Route path="/track/:trackingNumber" element={<TrackShipment />} />
         <Route path="/app" element={<PrivateRoute><MainLayout /></PrivateRoute>}>
           <Route index element={<Navigate to="/app/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />

@@ -66,7 +66,7 @@ export default function Shipments() {
     }
   }
 
-  const columns = ['Name', 'Origin', 'Destination', 'Status', 'Vehicles', 'Actions']
+  const columns = ['Name', 'Tracking #', 'Origin', 'Destination', 'Status', 'Vehicles', 'Actions']
 
   return (
     <div>
@@ -86,6 +86,11 @@ export default function Shipments() {
         renderRow={(s) => (
           <tr key={s.id} className="hover:bg-gray-50">
             <td className="px-4 py-3 font-medium">{s.name}</td>
+            <td className="px-4 py-3">
+              {s.trackingNumber
+                ? <span className="font-mono text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded border border-blue-100">{s.trackingNumber}</span>
+                : <span className="text-gray-400 text-xs">—</span>}
+            </td>
             <td className="px-4 py-3">{s.origin}</td>
             <td className="px-4 py-3">{s.destination}</td>
             <td className="px-4 py-3"><Badge status={s.status} /></td>
