@@ -99,12 +99,7 @@ function LoginForm({ onRegister, onForgot, navigate }) {
         Don't have an account?{' '}
         <button onClick={onRegister} className="text-blue-600 font-medium hover:underline">Create one</button>
       </p>
-      <div className="mt-6 p-4 bg-gray-50 rounded-xl text-xs text-gray-500 space-y-1 border border-gray-100">
-        <p className="font-semibold text-gray-600 mb-2">Demo Accounts</p>
-        <p>admin@autotrack.com / admin123</p>
-        <p>sales@autotrack.com / sales123</p>
-        <p>logistics@autotrack.com / logistics123</p>
-      </div>
+
     </>
   )
 }
