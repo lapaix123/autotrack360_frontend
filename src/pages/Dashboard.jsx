@@ -143,13 +143,7 @@ function StatCard({ label, value, sub, Icon, gradient, trend }) {
 }
 
 // ── Main Dashboard ─────────────────────────────────────────
-export default function Dashboard() {
-  const role = localStorage.getItem('role') || 'ADMIN'
-
-  if (role === 'SALES') return <SalesDashboard />
-  if (role === 'LOGISTICS') return <LogisticsDashboard />
-
-  // ADMIN — full dashboard below
+function AdminDashboard() {
   const [stats, setStats] = useState(null)
   const [error, setError] = useState('')
 
@@ -391,4 +385,11 @@ export default function Dashboard() {
       </div>
     </div>
   )
+}
+
+export default function Dashboard() {
+  const role = localStorage.getItem('role') || 'ADMIN'
+  if (role === 'SALES') return <SalesDashboard />
+  if (role === 'LOGISTICS') return <LogisticsDashboard />
+  return <AdminDashboard />
 }
