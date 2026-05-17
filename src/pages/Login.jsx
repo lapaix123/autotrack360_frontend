@@ -66,6 +66,7 @@ function LoginForm({ onRegister, onForgot, navigate }) {
       localStorage.setItem('token', data.token)
       localStorage.setItem('email', data.email)
       localStorage.setItem('role', data.role)
+      localStorage.setItem('name', data.name || data.email)
       navigate('/app/dashboard')
     } catch (err) {
       setError(err.response?.data?.error || 'Login failed')
@@ -178,7 +179,7 @@ function ForgotForm({ onBack, onOtpSent }) {
     setError('')
     setLoading(true)
     try {
-      await authAPI.forgotPassword({ phone })
+      await authAPI.forgotPassword({ email: phone })
       onOtpSent()
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to send OTP')
@@ -193,11 +194,11 @@ function ForgotForm({ onBack, onOtpSent }) {
         <ArrowLeft size={15} /> Back to sign in
       </button>
       <h2 className="text-2xl font-bold text-gray-900 mb-1">Forgot password</h2>
-      <p className="text-gray-500 text-sm mb-8">Enter your phone number to receive a 6-digit OTP via SMS.</p>
+      <p className="text-gray-500 text-sm mb-8">Enter your email address to receive a 6-digit OTP.</p>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Phone Number *</label>
-          <input type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} className={input} placeholder="+1234567890" />
+          <label className="block text-xs font-medium text-gray-600 mb-1">Email Address *</label>
+          <input type="email" required value={phone} onChange={(e) => setPhone(e.target.value)} className={input} placeholder="you@example.com" />
         </div>
         {error && <p className="text-red-500 text-sm">{error}</p>}
         <button type="submit" disabled={loading} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg text-sm disabled:opacity-60">
@@ -243,8 +244,8 @@ function ResetForm({ onBack }) {
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Phone Number *</label>
-            <input type="tel" required value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className={input} />
+            <label className="block text-xs font-medium text-gray-600 mb-1">Email Address *</label>
+            <input type="email" required value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className={input} />
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">OTP Code *</label>

@@ -4,10 +4,12 @@ import Modal from '../components/Modal'
 import Badge from '../components/Badge'
 import Table from '../components/Table'
 import PageHeader from '../components/PageHeader'
+import { BadgeDollarSign, Users, ShoppingCart, CheckCircle, Clock } from 'lucide-react'
 
 const input = 'w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
 
 export default function Sales() {
+  const [tab, setTab] = useState('orders')
   const [sales, setSales] = useState([])
   const [customers, setCustomers] = useState([])
   const [vehicles, setVehicles] = useState([])
@@ -61,49 +63,95 @@ export default function Sales() {
     }
   }
 
-  const columns = ['Customer', 'Vehicle', 'Amount', 'Status', 'Actions']
+  const pending = sales.filter(s => s.status === 'PENDING').length
+  const completed = sales.filter(s => s.status === 'COMPLETED').length
 
   return (
     <div>
       <PageHeader
-        title="Sales"
+        title="Sales Department"
         action={
           <div className="flex gap-2">
             <button onClick={() => { setShowCustomer(true); setError('') }}
-              className="border border-blue-600 text-blue-600 hover:bg-blue-50 text-sm px-4 py-2 rounded-lg">
-              + Customer
+              className="flex items-center gap-1.5 border border-blue-600 text-blue-600 hover:bg-blue-50 text-sm px-4 py-2 rounded-lg">
+              <Users size={14} /> Add Customer
             </button>
             <button onClick={() => { setShowSale(true); setError('') }}
-              className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-lg">
-              + New Sale
+              className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-lg">
+              <ShoppingCart size={14} /> New Order
             </button>
           </div>
         }
       />
 
-      <Table
-        columns={columns}
-        data={sales}
-        renderRow={(s) => (
-          <tr key={s.id} className="hover:bg-gray-50">
-            <td className="px-4 py-3">
-              <p className="font-medium">{s.customer.name}</p>
-              <p className="text-xs text-gray-400">{s.customer.phone}</p>
-            </td>
-            <td className="px-4 py-3">
-              <p>{s.vehicle.make} {s.vehicle.model}</p>
-              <p className="text-xs text-gray-400">{s.vehicle.vin}</p>
-            </td>
-            <td className="px-4 py-3 font-medium">${Number(s.totalAmount).toLocaleString()}</td>
-            <td className="px-4 py-3"><Badge status={s.status} /></td>
-            <td className="px-4 py-3">
-              {s.status === 'PENDING' && (
-                <button onClick={() => handleComplete(s.id)} className="text-green-600 hover:underline text-xs">Complete</button>
-              )}
-            </td>
-          </tr>
-        )}
-      />
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-4 mb-6">
+        <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-3">
+          <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center"><BadgeDollarSign size={20} className="text-blue-600" /></div>
+          <div><p className="text-xs text-gray-500">Total Orders</p><p className="text-2xl font-bold text-gray-800">{sales.length}</p></div>
+        </div>
+        <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-3">
+          <div className="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center"><Clock size={20} className="text-orange-500" /></div>
+          <div><p className="text-xs text-gray-500">Pending</p><p className="text-2xl font-bold text-gray-800">{pending}</p></div>
+        </div>
+        <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-3">
+          <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center"><CheckCircle size={20} className="text-green-500" /></div>
+          <div><p className="text-xs text-gray-500">Completed</p><p className="text-2xl font-bold text-gray-800">{completed}</p></div>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-1 bg-gray-100 p-1 rounded-xl mb-4 w-fit">
+        <button onClick={() => setTab('orders')} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${tab === 'orders' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500'}`}>Orders</button>
+        <button onClick={() => setTab('customers')} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${tab === 'customers' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500'}`}>Customers ({customers.length})</button>
+      </div>
+
+      {tab === 'orders' && (
+        <Table
+          columns={['Customer', 'Vehicle', 'Amount', 'Status', 'Actions']}
+          data={sales}
+          renderRow={(s) => (
+            <tr key={s.id} className="hover:bg-gray-50">
+              <td className="px-4 py-3">
+                <p className="font-medium">{s.customer.name}</p>
+                <p className="text-xs text-gray-400">{s.customer.phone} · {s.customer.email}</p>
+              </td>
+              <td className="px-4 py-3">
+                <p>{s.vehicle.make} {s.vehicle.model} ({s.vehicle.year})</p>
+                <p className="text-xs text-gray-400 font-mono">{s.vehicle.vin}</p>
+              </td>
+              <td className="px-4 py-3 font-semibold">${Number(s.totalAmount).toLocaleString()}</td>
+              <td className="px-4 py-3"><Badge status={s.status} /></td>
+              <td className="px-4 py-3">
+                {s.status === 'PENDING' && (
+                  <button onClick={() => handleComplete(s.id)} className="flex items-center gap-1 text-green-600 hover:text-green-700 text-xs font-medium">
+                    <CheckCircle size={13} /> Complete
+                  </button>
+                )}
+              </td>
+            </tr>
+          )}
+        />
+      )}
+
+      {tab === 'customers' && (
+        <Table
+          columns={['Name', 'Phone', 'Email']}
+          data={customers}
+          renderRow={(c) => (
+            <tr key={c.id} className="hover:bg-gray-50">
+              <td className="px-4 py-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-xs font-bold">{c.name[0]}</div>
+                  <span className="font-medium">{c.name}</span>
+                </div>
+              </td>
+              <td className="px-4 py-3 text-gray-600">{c.phone}</td>
+              <td className="px-4 py-3 text-gray-600">{c.email}</td>
+            </tr>
+          )}
+        />
+      )}
 
       {/* Create Customer Modal */}
       {showCustomer && (

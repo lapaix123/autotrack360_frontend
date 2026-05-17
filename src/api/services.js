@@ -9,6 +9,8 @@ export const authAPI = {
 
 export const dashboardAPI = {
   get: () => api.get('/dashboard'),
+  getSales: () => api.get('/dashboard/sales'),
+  getLogistics: () => api.get('/dashboard/logistics'),
 }
 
 export const vehiclesAPI = {
@@ -59,4 +61,13 @@ export const documentsAPI = {
   getAll: (relatedType, relatedId) => api.get(`/documents?relatedType=${relatedType}&relatedId=${relatedId}`),
   upload: (formData) => api.post('/documents/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
   download: (id) => api.get(`/documents/${id}/download`, { responseType: 'blob' }),
+}
+
+export const reportsAPI = {
+  getSales: () => api.get('/reports/sales'),
+  getVehicles: () => api.get('/reports/vehicles'),
+  getShipments: () => api.get('/reports/shipments'),
+  exportSalesCsv: () => `${api.defaults.baseURL}/reports/sales/export`,
+  exportVehiclesCsv: () => `${api.defaults.baseURL}/reports/vehicles/export`,
+  exportShipmentsCsv: () => `${api.defaults.baseURL}/reports/shipments/export`,
 }

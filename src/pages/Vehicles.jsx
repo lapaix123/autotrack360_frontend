@@ -137,16 +137,10 @@ export default function Vehicles() {
 }
 
 function VehicleCard({ vehicle: v, onDetail, onEdit, onStatus }) {
-  const [images, setImages] = useState([])
+  const images = v.images || []
   const [imgIdx, setImgIdx] = useState(0)
 
-  useEffect(() => {
-    vehiclesAPI.getImages(v.id).then(({ data }) => setImages(data)).catch(() => {})
-  }, [v.id])
-
-  const mainImg = images[imgIdx]
-    ? vehiclesAPI.getImageUrl(v.id, images[imgIdx].filename)
-    : null
+  const mainImg = images[imgIdx]?.url || null
 
   return (
     <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow group">
@@ -207,7 +201,6 @@ function VehicleDetailModal({ vehicle: v, onClose, onRefresh }) {
   function loadImages() {
     vehiclesAPI.getImages(v.id).then(({ data }) => setImages(data)).catch(() => {})
   }
-
   useEffect(() => { loadImages() }, [v.id])
 
   async function handleUpload(e) {
@@ -235,7 +228,7 @@ function VehicleDetailModal({ vehicle: v, onClose, onRefresh }) {
     setActiveImg(0)
   }
 
-  const activeUrl = images[activeImg] ? vehiclesAPI.getImageUrl(v.id, images[activeImg].filename) : null
+  const activeUrl = images[activeImg]?.url || null
 
   return (
     <Modal title={`${v.make} ${v.model} (${v.year})`} onClose={onClose} wide>
@@ -267,7 +260,7 @@ function VehicleDetailModal({ vehicle: v, onClose, onRefresh }) {
               {images.map((img, i) => (
                 <button key={img.id} onClick={() => setActiveImg(i)}
                   className={`flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden border-2 transition-colors ${i === activeImg ? 'border-blue-500' : 'border-transparent'}`}>
-                  <img src={vehiclesAPI.getImageUrl(v.id, img.filename)} alt="" className="w-full h-full object-cover" />
+                  <img src={img.url} alt="" className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>

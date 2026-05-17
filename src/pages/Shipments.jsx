@@ -4,6 +4,7 @@ import Modal from '../components/Modal'
 import Badge from '../components/Badge'
 import Table from '../components/Table'
 import PageHeader from '../components/PageHeader'
+import { Ship, Truck, CheckCircle, Package, Plus } from 'lucide-react'
 
 const STATUSES = ['CREATED', 'SHIPPED', 'ARRIVED']
 const input = 'w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
@@ -68,17 +69,36 @@ export default function Shipments() {
 
   const columns = ['Name', 'Tracking #', 'Origin', 'Destination', 'Status', 'Vehicles', 'Actions']
 
+  const arrived = shipments.filter(s => s.status === 'ARRIVED').length
+  const inTransit = shipments.filter(s => s.status === 'SHIPPED').length
+
   return (
     <div>
       <PageHeader
-        title="Shipments"
+        title="Logistics — Shipments"
         action={
           <button onClick={() => { setShowCreate(true); setError('') }}
-            className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-lg">
-            + New Shipment
+            className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-lg">
+            <Plus size={14} /> New Shipment
           </button>
         }
       />
+
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-4 mb-6">
+        <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-3">
+          <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center"><Package size={20} className="text-blue-600" /></div>
+          <div><p className="text-xs text-gray-500">Total Shipments</p><p className="text-2xl font-bold">{shipments.length}</p></div>
+        </div>
+        <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-3">
+          <div className="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center"><Truck size={20} className="text-orange-500" /></div>
+          <div><p className="text-xs text-gray-500">In Transit</p><p className="text-2xl font-bold">{inTransit}</p></div>
+        </div>
+        <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-3">
+          <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center"><CheckCircle size={20} className="text-green-500" /></div>
+          <div><p className="text-xs text-gray-500">Arrived</p><p className="text-2xl font-bold">{arrived}</p></div>
+        </div>
+      </div>
 
       <Table
         columns={columns}

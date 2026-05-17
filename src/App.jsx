@@ -9,6 +9,7 @@ import Sales from './pages/Sales'
 import Payments from './pages/Payments'
 import Documents from './pages/Documents'
 import TrackShipment from './pages/TrackShipment'
+import Reports from './pages/Reports'
 import MainLayout from './layouts/MainLayout'
 
 function PrivateRoute({ children }) {
@@ -32,6 +33,7 @@ export default function App() {
           <Route path="sales" element={<Sales />} />
           <Route path="payments" element={<Payments />} />
           <Route path="documents" element={<Documents />} />
+          <Route path="reports" element={<Reports />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
