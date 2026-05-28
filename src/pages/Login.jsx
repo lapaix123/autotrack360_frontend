@@ -156,6 +156,7 @@ function RegisterForm({ onBack }) {
             <select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })} className={input}>
               <option value="SALES">Sales</option>
               <option value="LOGISTICS">Logistics</option>
+              <option value="SHIPPING_COMPANY">Shipping Company</option>
               <option value="ADMIN">Admin</option>
             </select>
           </div>
