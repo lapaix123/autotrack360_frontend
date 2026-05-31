@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Navigate } from 'react-router-dom'
 import { dashboardAPI } from '../api/services'
 import SalesDashboard from './SalesDashboard'
 import LogisticsDashboard from './LogisticsDashboard'
@@ -389,6 +390,8 @@ function AdminDashboard() {
 
 export default function Dashboard() {
   const role = localStorage.getItem('role') || 'ADMIN'
+  if (role === 'CUSTOMER') return <Navigate to="/customer" replace />
+  if (role === 'SHIPPING_COMPANY') return <Navigate to="/app/shipping" replace />
   if (role === 'SALES') return <SalesDashboard />
   if (role === 'LOGISTICS') return <LogisticsDashboard />
   return <AdminDashboard />

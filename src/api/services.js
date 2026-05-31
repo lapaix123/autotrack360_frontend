@@ -31,6 +31,7 @@ export const shipmentsAPI = {
   create: (data) => api.post('/shipments', data),
   addVehicle: (id, vehicleId) => api.post(`/shipments/${id}/vehicles/${vehicleId}`),
   updateStatus: (id, status) => api.patch(`/shipments/${id}/status?status=${status}`),
+  updateGps: (id, lat, lng, location) => api.patch(`/shipments/${id}/gps`, null, { params: { lat, lng, location } }),
   track: (trackingNumber) => api.get(`/shipments/track/${trackingNumber}`),
 }
 

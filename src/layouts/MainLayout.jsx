@@ -7,6 +7,7 @@ import {
 
 const allNavItems = [
   { to: '/app/dashboard', label: 'Dashboard', Icon: LayoutDashboard, roles: ['ADMIN', 'SALES', 'LOGISTICS'] },
+  { to: '/app/shipping', label: 'My Shipments', Icon: Ship, roles: ['SHIPPING_COMPANY'] },
   // Sales department
   { to: '/app/sales', label: 'Sales Orders', Icon: BadgeDollarSign, roles: ['ADMIN', 'SALES'], group: 'Sales' },
   { to: '/app/payments', label: 'Payments', Icon: CreditCard, roles: ['ADMIN', 'SALES'], group: 'Sales' },
@@ -23,6 +24,7 @@ const roleLabels = {
   ADMIN: { label: 'Administrator', color: 'bg-purple-500/10 text-purple-400 border-purple-500/20' },
   SALES: { label: 'Sales Department', color: 'bg-green-500/10 text-green-400 border-green-500/20' },
   LOGISTICS: { label: 'Logistics Department', color: 'bg-blue-500/10 text-blue-400 border-blue-500/20' },
+  SHIPPING_COMPANY: { label: 'Shipping Company', color: 'bg-orange-500/10 text-orange-400 border-orange-500/20' },
 }
 
 const groupColors = {

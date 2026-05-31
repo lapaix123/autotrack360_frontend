@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { vehiclesAPI, shipmentsAPI, salesAPI } from '../api/services'
 import Modal from '../components/Modal'
 import Badge from '../components/Badge'
 import PageHeader from '../components/PageHeader'
-import { Car, MapPin, Ship, CheckCircle, ChevronRight, Plus, CreditCard } from 'lucide-react'
+import { Car, MapPin, Ship, CheckCircle, ChevronRight, Plus, CreditCard, LogOut } from 'lucide-react'
 
 const input = 'w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50'
 
 export default function CustomerPortal() {
+  const navigate = useNavigate()
+  const name = localStorage.getItem('name') || localStorage.getItem('email')
   const [tab, setTab] = useState('browse') // browse | orders | shipments | payments
   const [vehicles, setVehicles] = useState([])
   const [myOrders, setMyOrders] = useState([])
@@ -39,23 +42,33 @@ export default function CustomerPortal() {
   }
 
   return (
+    <div className="min-h-screen bg-gray-50 p-6">
     <div className="max-w-7xl mx-auto">
       <PageHeader
         title="Customer Portal"
         action={
-          <div className="flex gap-2">
-            <button onClick={() => setTab('browse')} className={`px-4 py-2 rounded-lg text-sm font-medium ${tab === 'browse' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 border border-gray-200'}`}>
-              Browse Vehicles
-            </button>
-            <button onClick={() => setTab('orders')} className={`px-4 py-2 rounded-lg text-sm font-medium ${tab === 'orders' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 border border-gray-200'}`}>
-              My Orders
-            </button>
-            <button onClick={() => setTab('shipments')} className={`px-4 py-2 rounded-lg text-sm font-medium ${tab === 'shipments' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 border border-gray-200'}`}>
-              Track Shipments
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-gray-500 hidden sm:inline">Hi, {name}</span>
+            <button
+              onClick={() => { localStorage.clear(); navigate('/login') }}
+              className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-red-500"
+            >
+              <LogOut size={14} /> Sign out
             </button>
           </div>
         }
       />
+      <div className="flex gap-2 mb-6">
+        <button onClick={() => setTab('browse')} className={`px-4 py-2 rounded-lg text-sm font-medium ${tab === 'browse' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 border border-gray-200'}`}>
+          Browse Vehicles
+        </button>
+        <button onClick={() => setTab('orders')} className={`px-4 py-2 rounded-lg text-sm font-medium ${tab === 'orders' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 border border-gray-200'}`}>
+          My Orders
+        </button>
+        <button onClick={() => setTab('shipments')} className={`px-4 py-2 rounded-lg text-sm font-medium ${tab === 'shipments' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 border border-gray-200'}`}>
+          Track Shipments
+        </button>
+      </div>
 
       {tab === 'browse' && (
         <div>
@@ -187,6 +200,7 @@ export default function CustomerPortal() {
           </form>
         </Modal>
       )}
+    </div>
     </div>
   )
 }

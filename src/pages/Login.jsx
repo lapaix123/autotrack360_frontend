@@ -5,6 +5,12 @@ import { Car, ArrowLeft } from 'lucide-react'
 
 const input = 'w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50'
 
+function getHomeRoute(role) {
+  if (role === 'CUSTOMER') return '/customer'
+  if (role === 'SHIPPING_COMPANY') return '/app/shipping'
+  return '/app/dashboard'
+}
+
 export default function Login() {
   const [tab, setTab] = useState('login') // login | register | forgot | reset
   const navigate = useNavigate()
@@ -67,7 +73,7 @@ function LoginForm({ onRegister, onForgot, navigate }) {
       localStorage.setItem('email', data.email)
       localStorage.setItem('role', data.role)
       localStorage.setItem('name', data.name || data.email)
-      navigate('/app/dashboard')
+      navigate(getHomeRoute(data.role))
     } catch (err) {
       setError(err.response?.data?.error || 'Login failed')
     } finally {

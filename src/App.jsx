@@ -11,10 +11,18 @@ import Documents from './pages/Documents'
 import TrackShipment from './pages/TrackShipment'
 import Reports from './pages/Reports'
 import CustomerPortal from './pages/CustomerPortal'
+import ShippingPortal from './pages/ShippingPortal'
 import MainLayout from './layouts/MainLayout'
 
 function PrivateRoute({ children }) {
   return localStorage.getItem('token') ? children : <Navigate to="/login" replace />
+}
+
+function AppHome() {
+  const role = localStorage.getItem('role')
+  if (role === 'CUSTOMER') return <Navigate to="/customer" replace />
+  if (role === 'SHIPPING_COMPANY') return <Navigate to="/app/shipping" replace />
+  return <Navigate to="/app/dashboard" replace />
 }
 
 export default function App() {
@@ -25,10 +33,11 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/track" element={<TrackShipment />} />
         <Route path="/track/:trackingNumber" element={<TrackShipment />} />
-        <Route path="/customer" element={<CustomerPortal />} />
+        <Route path="/customer" element={<PrivateRoute><CustomerPortal /></PrivateRoute>} />
         <Route path="/app" element={<PrivateRoute><MainLayout /></PrivateRoute>}>
-          <Route index element={<Navigate to="/app/dashboard" replace />} />
+          <Route index element={<AppHome />} />
           <Route path="dashboard" element={<Dashboard />} />
+          <Route path="shipping" element={<ShippingPortal />} />
           <Route path="vehicles" element={<Vehicles />} />
           <Route path="shipments" element={<Shipments />} />
           <Route path="inventory" element={<Inventory />} />
