@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { vehiclesAPI, shipmentsAPI, salesAPI } from '../api/services'
+import { vehiclesAPI, shipmentsAPI, salesAPI, paymentsAPI } from '../api/services'
 import Modal from '../components/Modal'
 import Badge from '../components/Badge'
 import PageHeader from '../components/PageHeader'
@@ -17,13 +17,16 @@ export default function CustomerPortal() {
   const [myShipments, setMyShipments] = useState([])
   const [myPayments, setMyPayments] = useState([])
   const [showOrder, setShowOrder] = useState(false)
+  const [showPayment, setShowPayment] = useState(false)
+  const [paymentOrder, setPaymentOrder] = useState(null)
+  const [paymentAmount, setPaymentAmount] = useState('')
+  const [paymentLoading, setPaymentLoading] = useState(false)
   const [selectedVehicle, setSelectedVehicle] = useState(null)
   const [orderForm, setOrderForm] = useState({ vehicleId: '', totalAmount: '' })
   const [error, setError] = useState('')
 
   useEffect(() => {
-    vehiclesAPI.getAll().then(({ data }) => setVehicles(data))
-    // Load customer's data
+    vehiclesAPI.getAll(null, true).then(({ data }) => setVehicles(data))
     salesAPI.getAll().then(({ data }) => setMyOrders(data))
     shipmentsAPI.getAll().then(({ data }) => setMyShipments(data))
   }, [])
@@ -36,8 +39,36 @@ export default function CustomerPortal() {
       setShowOrder(false)
       setOrderForm({ vehicleId: '', totalAmount: '' })
       salesAPI.getAll().then(({ data }) => setMyOrders(data))
+      vehiclesAPI.getAll(null, true).then(({ data }) => setVehicles(data))
     } catch (err) {
       setError(err.response?.data?.error || 'Error creating order')
+    }
+  }
+
+  function openPayment(order) {
+    setPaymentOrder(order)
+    setPaymentAmount(String(order.totalAmount))
+    setError('')
+    setShowPayment(true)
+  }
+
+  async function handleCreatePayment(e) {
+    e.preventDefault()
+    setError('')
+    setPaymentLoading(true)
+    try {
+      await paymentsAPI.create({
+        saleId: paymentOrder.id,
+        amount: Number(paymentAmount),
+      })
+      setShowPayment(false)
+      setPaymentOrder(null)
+      setPaymentAmount('')
+      salesAPI.getAll().then(({ data }) => setMyOrders(data))
+    } catch (err) {
+      setError(err.response?.data?.error || 'Error processing payment')
+    } finally {
+      setPaymentLoading(false)
     }
   }
 
@@ -77,10 +108,10 @@ export default function CustomerPortal() {
             <span className="text-sm text-gray-500">{vehicles.length} vehicles available</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {vehicles.filter(v => v.status === 'AVAILABLE').map((v) => (
+            {vehicles.map((v) => (
               <VehicleCard key={v.id} vehicle={v} onOrder={() => { setSelectedVehicle(v); setOrderForm({ vehicleId: v.id, totalAmount: v.price }); setShowOrder(true) }} />
             ))}
-            {vehicles.filter(v => v.status === 'AVAILABLE').length === 0 && (
+            {vehicles.length === 0 && (
               <div className="col-span-full text-center py-16 text-gray-400">
                 <Car size={40} className="mx-auto mb-3 opacity-30" />
                 <p>No vehicles available for purchase</p>
@@ -113,7 +144,11 @@ export default function CustomerPortal() {
                     <td className="px-4 py-3"><Badge status={o.status} /></td>
                     <td className="px-4 py-3">
                       {o.status === 'PENDING' && (
-                        <button className="text-blue-600 hover:underline text-xs flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => openPayment(o)}
+                          className="text-blue-600 hover:underline text-xs flex items-center gap-1"
+                        >
                           <CreditCard size={12} /> Make Payment
                         </button>
                       )}
@@ -174,6 +209,38 @@ export default function CustomerPortal() {
             )}
           </div>
         </div>
+      )}
+
+      {showPayment && paymentOrder && (
+        <Modal title={`Pay for Order #${paymentOrder.id}`} onClose={() => setShowPayment(false)}>
+          <form onSubmit={handleCreatePayment} className="space-y-4">
+            <div className="bg-blue-50 rounded-lg p-4">
+              <p className="text-sm text-blue-800">
+                <strong>Vehicle:</strong> {paymentOrder.vehicle.make} {paymentOrder.vehicle.model} ({paymentOrder.vehicle.year})<br />
+                <strong>Order total:</strong> ${Number(paymentOrder.totalAmount).toLocaleString()}
+              </p>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Payment Amount *</label>
+              <input
+                type="number"
+                step="0.01"
+                required
+                min="0.01"
+                value={paymentAmount}
+                onChange={(e) => setPaymentAmount(e.target.value)}
+                className={input}
+              />
+            </div>
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+            <div className="flex justify-end gap-2 pt-2">
+              <button type="button" onClick={() => setShowPayment(false)} className="px-4 py-2 text-sm border rounded-lg">Cancel</button>
+              <button type="submit" disabled={paymentLoading} className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg flex items-center gap-2 disabled:opacity-60">
+                <CreditCard size={14} /> {paymentLoading ? 'Processing...' : 'Pay Now'}
+              </button>
+            </div>
+          </form>
+        </Modal>
       )}
 
       {showOrder && (
