@@ -14,7 +14,13 @@ export const dashboardAPI = {
 }
 
 export const vehiclesAPI = {
-  getAll: (status) => api.get(status ? `/vehicles?status=${status}` : '/vehicles'),
+  getAll: (status, forSale = false) => {
+    const params = new URLSearchParams()
+    if (status) params.set('status', status)
+    if (forSale) params.set('forSale', 'true')
+    const query = params.toString()
+    return api.get(query ? `/vehicles?${query}` : '/vehicles')
+  },
   getById: (id) => api.get(`/vehicles/${id}`),
   create: (data) => api.post('/vehicles', data),
   update: (id, data) => api.put(`/vehicles/${id}`, data),

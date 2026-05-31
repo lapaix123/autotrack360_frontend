@@ -49,7 +49,7 @@ export default function Login() {
           </div>
 
           {tab === 'login' && <LoginForm onRegister={() => setTab('register')} onForgot={() => setTab('forgot')} navigate={navigate} />}
-          {tab === 'register' && <RegisterForm onBack={() => setTab('login')} />}
+          {tab === 'register' && <RegisterForm onBack={() => setTab('login')} navigate={navigate} />}
           {tab === 'forgot' && <ForgotForm onBack={() => setTab('login')} onOtpSent={() => setTab('reset')} />}
           {tab === 'reset' && <ResetForm onBack={() => setTab('login')} />}
         </div>
@@ -95,7 +95,7 @@ function LoginForm({ onRegister, onForgot, navigate }) {
             <label className="text-xs font-medium text-gray-600">Password</label>
             <button type="button" onClick={onForgot} className="text-xs text-blue-600 hover:underline">Forgot password?</button>
           </div>
-          <input type="password" required value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className={input} placeholder="••••••••" />
+          <input type="password" required autoComplete="current-password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className={input} placeholder="••••••••" />
         </div>
         {error && <p className="text-red-500 text-sm">{error}</p>}
         <button type="submit" disabled={loading} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg text-sm transition-colors disabled:opacity-60">
@@ -111,10 +111,9 @@ function LoginForm({ onRegister, onForgot, navigate }) {
   )
 }
 
-function RegisterForm({ onBack }) {
-  const [form, setForm] = useState({ email: '', password: '', phone: '', role: 'SALES' })
+function RegisterForm({ onBack, navigate }) {
+  const [form, setForm] = useState({ name: '', email: '', password: '', phone: '', role: 'CUSTOMER' })
   const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
 
   async function handleSubmit(e) {
@@ -122,8 +121,12 @@ function RegisterForm({ onBack }) {
     setError('')
     setLoading(true)
     try {
-      await authAPI.register(form)
-      setSuccess('Account created! You can now sign in.')
+      const { data } = await authAPI.register(form)
+      localStorage.setItem('token', data.token)
+      localStorage.setItem('email', data.email)
+      localStorage.setItem('role', data.role)
+      localStorage.setItem('name', data.name || data.email)
+      navigate(getHomeRoute(data.role))
     } catch (err) {
       setError(err.response?.data?.error || 'Registration failed')
     } finally {
@@ -138,31 +141,30 @@ function RegisterForm({ onBack }) {
       </button>
       <h2 className="text-2xl font-bold text-gray-900 mb-1">Create account</h2>
       <p className="text-gray-500 text-sm mb-8">Fill in your details to get started</p>
-      {success ? (
-        <div className="bg-green-50 border border-green-200 text-green-700 rounded-xl p-4 text-sm">
-          {success}
-          <button onClick={onBack} className="block mt-3 text-blue-600 font-medium hover:underline">Sign in now →</button>
-        </div>
-      ) : (
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Full Name *</label>
+            <input type="text" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={input} placeholder="John Doe" />
+          </div>
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Email *</label>
-            <input type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className={input} />
+            <input type="email" required autoComplete="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className={input} />
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Phone</label>
-            <input type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className={input} placeholder="+1234567890" />
+            <input type="tel" autoComplete="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className={input} placeholder="+1234567890" />
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Password *</label>
-            <input type="password" required value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className={input} />
+            <input type="password" required autoComplete="new-password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className={input} />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Role</label>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Account Type</label>
             <select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })} className={input}>
+              <option value="CUSTOMER">Customer</option>
+              <option value="SHIPPING_COMPANY">Shipping Company</option>
               <option value="SALES">Sales</option>
               <option value="LOGISTICS">Logistics</option>
-              <option value="SHIPPING_COMPANY">Shipping Company</option>
               <option value="ADMIN">Admin</option>
             </select>
           </div>
@@ -171,7 +173,6 @@ function RegisterForm({ onBack }) {
             {loading ? 'Creating...' : 'Create Account'}
           </button>
         </form>
-      )}
     </>
   )
 }
